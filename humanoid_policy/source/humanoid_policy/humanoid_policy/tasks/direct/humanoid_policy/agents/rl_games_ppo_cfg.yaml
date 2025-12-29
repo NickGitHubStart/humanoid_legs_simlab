@@ -1,0 +1,74 @@
+params:
+  seed: 42
+
+  # Environment wrapper clipping
+  env:
+    clip_observations: 10.0   # increased for more complex observations
+    clip_actions: 1.0
+
+  algo:
+    name: a2c_continuous
+
+  model:
+    name: continuous_a2c_logstd
+
+  network:
+    name: actor_critic
+    separate: False
+    space:
+      continuous:
+        mu_activation: None
+        sigma_activation: None
+        mu_init:
+          name: default
+        sigma_init:
+          name: const_initializer
+          val: 0
+        fixed_sigma: True
+    mlp:
+      # Larger network for humanoid control
+      units: [256, 128, 64]
+      activation: elu
+      d2rl: False
+      initializer:
+        name: default
+      regularizer:
+        name: None
+
+  load_checkpoint: False
+  load_path: ''
+
+  config:
+    name: humanoid_leg_balance
+    env_name: rlgpu
+    device: 'cuda:0'
+    device_name: 'cuda:0'
+    multi_gpu: False
+    ppo: True
+    mixed_precision: False
+    normalize_input: True
+    normalize_value: True
+    num_actors: -1  # configured from script (based on num_envs)
+    reward_shaper:
+      scale_value: 1.0
+    normalize_advantage: True
+    gamma: 0.99
+    tau: 0.95
+    learning_rate: 3e-4
+    lr_schedule: adaptive
+    kl_threshold: 0.01
+    score_to_win: 100000
+    max_epochs: 1000           # more epochs for complex task
+    save_best_after: 100
+    save_frequency: 50
+    grad_norm: 1.0
+    entropy_coef: 0.001        # small exploration bonus
+    truncate_grads: True
+    e_clip: 0.2
+    horizon_length: 64         # longer horizon for locomotion
+    minibatch_size: 32768      # larger batch for stable learning
+    mini_epochs: 5
+    critic_coef: 2
+    clip_value: True
+    seq_length: 4
+    bounds_loss_coef: 0.0001
