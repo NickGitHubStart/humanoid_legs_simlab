@@ -58,7 +58,7 @@ params:
     lr_schedule: adaptive
     kl_threshold: 0.01
     score_to_win: 100000
-    max_epochs: 1000           # more epochs for complex task
+    max_epochs: 5000           # more epochs for complex task
     save_best_after: 100
     save_frequency: 50
     grad_norm: 1.0
