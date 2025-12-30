@@ -20,7 +20,7 @@ from isaaclab.utils import configclass
 HUMANOID_LEG_CFG = ArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
         usd_path=(
-            "C:/Users/2003n/projects/humanoid_tracked_legged_robot/policy/"
+            "C:/Users/2003n/projects/humanoid_tracked_legged_robot/policy/humanoid_legs_simlab/"
             "humanoid_policy/source/humanoid_policy/humanoid_policy/robots/assets/humanoid_leg_robot.usd"
         ),
         activate_contact_sensors=True,
