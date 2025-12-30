@@ -41,6 +41,7 @@ HUMANOID_LEG_CFG = ArticulationCfg(
     ),
     init_state=ArticulationCfg.InitialStateCfg(
         pos=(0.0, 0.0, 0.8),  # Starting position [x, y, z] - adjust if robot is taller/shorter
+        #rot=(0.9848, 0.0, 0.1736, 0.0),  # Quaternion (w,x,y,z): ~20° forward tilt to compensate ankle angle
         joint_pos={
             # Smoothed nominal pose (deg → rad):
             # near-zero angles → 0; ~±20° → ±0.3491 rad
