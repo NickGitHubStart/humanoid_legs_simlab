@@ -90,7 +90,7 @@ class HumanoidPolicyEnvCfg(DirectRLEnvCfg):
 
     # ---- Env Settings ----
     decimation = 2  # env step every 2 sim steps (60 Hz control)
-    episode_length_s = 10.0  # episode length in seconds
+    episode_length_s = 5.0  # shorter episodes for faster learning
 
     # ---- Spaces Definition ----
     # Actions: 8 joint torques
@@ -170,10 +170,10 @@ class HumanoidPolicyEnvCfg(DirectRLEnvCfg):
     
     # Negative rewards (penalties)
     rew_scale_terminated = -5.0        # penalty for falling (ground contact)
-    rew_scale_joint_vel = -0.001       # penalty on joint velocity (smooth motion)
+    rew_scale_joint_vel = -0.0005      # reduced: allow small joint movements for balance
     rew_scale_action = -0.0001         # penalty on action magnitude (energy)
     rew_scale_action_rate = -0.001     # penalty on action change (smooth actions)
-    rew_scale_base_vel = -0.01         # penalty on base linear velocity (stay in place)
+    rew_scale_base_vel = -0.005        # reduced: allow small balance adjustments
     rew_scale_base_ang_vel = 0.0       # NO penalty for angular velocity (turning is allowed)
     rew_scale_joint_limit = -0.1       # penalty for being near joint limits
     
