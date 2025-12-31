@@ -158,11 +158,10 @@ class HumanoidPolicyEnv(DirectRLEnv):
         joint_vel = self.joint_vel[:, self._joint_ids]
 
         # Symmetry: difference between left and right leg joints
-        # WICHTIG: Servos sind GESPIEGELT montiert!
-        # Symmetrisch bedeutet: left_joint + right_joint = 0 (nicht left - right = 0)
         # Indices: [0=HipFlexL, 1=HipAbdL, 2=KneeL, 3=AnkleL, 4=HipFlexR, 5=HipAbdR, 6=KneeR, 7=AnkleR]
+        # NOTE: Manche Joints sind gespiegelt (+), manche nicht (-) - abhängig vom USD-Export
         hip_flex_diff = torch.abs(joint_pos[:, 0] + joint_pos[:, 4])  # gespiegelt: Summe = 0
-        knee_diff = torch.abs(joint_pos[:, 2] + joint_pos[:, 6])      # gespiegelt: Summe = 0
+        knee_diff = torch.abs(joint_pos[:, 2] - joint_pos[:, 6])      # TEST: nicht gespiegelt: Differenz = 0
         ankle_diff = torch.abs(joint_pos[:, 3] + joint_pos[:, 7])     # gespiegelt: Summe = 0
         symmetry_error = hip_flex_diff + knee_diff + ankle_diff  # smaller = more symmetric
 
