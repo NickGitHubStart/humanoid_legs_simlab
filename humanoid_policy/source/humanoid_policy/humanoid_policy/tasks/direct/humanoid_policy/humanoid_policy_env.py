@@ -83,8 +83,9 @@ class HumanoidPolicyEnv(DirectRLEnv):
     # ---- Apply Actions ----
     def _apply_action(self) -> None:
         """Apply joint torques to all joints."""
-        # Scale actions and apply as effort (torque) targets
-        torques = self.actions * self.cfg.action_scale
+        # Scale actions with per-joint action_scale and apply as effort (torque) targets
+        action_scale = torch.tensor(self.cfg.action_scale, device=self.device)
+        torques = self.actions * action_scale
         self.robot.set_joint_effort_target(torques, joint_ids=self._joint_ids)
 
     # ---- Get Observations ----

@@ -45,12 +45,12 @@ HUMANOID_LEG_CFG = ArticulationCfg(
         joint_pos={
             # Smoothed nominal pose (deg → rad):
             # near-zero angles → 0; ~±20° → ±0.3491 rad
-            "Revolute_11": 0.0,        # Hüfte Abduktion links
-            "Revolute_12": 0.0,        # Hüfte Flexion links
+            "Revolute_11": 0.0,        # Hüfte Flexion links
+            "Revolute_12": 0.0,        # Hüfte Abduktion links
             "Revolute_13": 0.3491,     # Knie links (~20°)
             "Revolute_14": -0.3491,    # Knöchel links (~-20°)
-            "Revolute_15": 0.0,        # Hüfte Abduktion rechts
-            "Revolute_16": 0.0,        # Hüfte Flexion rechts
+            "Revolute_15": 0.0,        # Hüfte Flexion rechts
+            "Revolute_16": 0.0,        # Hüfte Abduktion rechts
             "Revolute_17": -0.3491,    # Knie rechts (~-20°)
             "Revolute_18": 0.3491,     # Knöchel rechts (~20°)
         },
@@ -157,10 +157,17 @@ class HumanoidPolicyEnvCfg(DirectRLEnvCfg):
         "foot2_1_1",           # Fuß rechts
     ]
 
-    # ---- Action Scale ----
-    # NOTE: Aktuell 25 Nm für alle Joints.
-    #       Später: 15 Nm für alle außer Hüftflexion-Joints (Revolute_12, Revolute_16) die bei 25 Nm bleiben.
-    action_scale = 25.0  # Torque multiplier [Nm]
+    # ---- Action Scale (per Joint) ----
+    # Torque multiplier [Nm] for each joint:
+    # Revolute_11 (Hüfte Flexion L): 25 Nm - mehr Kraft für Vorwärts/Rückwärts
+    # Revolute_12 (Hüfte Abduktion L): 15 Nm
+    # Revolute_13 (Knie L): 15 Nm
+    # Revolute_14 (Knöchel L): 15 Nm
+    # Revolute_15 (Hüfte Flexion R): 25 Nm - mehr Kraft für Vorwärts/Rückwärts
+    # Revolute_16 (Hüfte Abduktion R): 15 Nm
+    # Revolute_17 (Knie R): 15 Nm
+    # Revolute_18 (Knöchel R): 15 Nm
+    action_scale = (25.0, 15.0, 15.0, 15.0, 25.0, 15.0, 15.0, 15.0)
 
     # ---- Reward Scales ----
     # Positive rewards
@@ -184,7 +191,7 @@ class HumanoidPolicyEnvCfg(DirectRLEnvCfg):
     # ---- Termination Conditions ----
     # ONLY terminate on ground contact (Hüfte/Oberschenkel/Unterschenkel touching ground)
     # NO termination on tilt - robot can lean as much as it wants until it touches ground
-    min_base_height = 0.15             # backup: terminate if base drops very low [m]
+    min_base_height = 0.30            # backup: terminate if base drops very low [m]
     use_contact_termination = True     # primary: terminate on body-ground contact
 
     # ---- Reset Randomization ----
