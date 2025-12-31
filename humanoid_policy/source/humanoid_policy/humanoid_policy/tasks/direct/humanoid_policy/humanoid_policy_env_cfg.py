@@ -174,6 +174,7 @@ class HumanoidPolicyEnvCfg(DirectRLEnvCfg):
     rew_scale_alive = 2.0              # reward for staying alive (not fallen)
     rew_scale_upright = 1.0            # reward for upright orientation
     rew_scale_foot_contact = 0.5       # reward for feet touching ground
+    rew_scale_symmetry = 0.3          # reward for symmetric leg positions (prevents lunging)
     
     # Negative rewards (penalties)
     rew_scale_terminated = -5.0        # penalty for falling (ground contact)

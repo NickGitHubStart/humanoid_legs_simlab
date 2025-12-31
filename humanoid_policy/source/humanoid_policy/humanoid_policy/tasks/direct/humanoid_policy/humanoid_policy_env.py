@@ -157,6 +157,14 @@ class HumanoidPolicyEnv(DirectRLEnv):
         joint_pos = self.joint_pos[:, self._joint_ids]
         joint_vel = self.joint_vel[:, self._joint_ids]
 
+        # Symmetry: difference between left and right leg joints
+        # Indices: [0=HipFlexL, 1=HipAbdL, 2=KneeL, 3=AnkleL, 4=HipFlexR, 5=HipAbdR, 6=KneeR, 7=AnkleR]
+        # Compare: HipFlex (0 vs 4), Knee (2 vs 6), Ankle (3 vs 7)
+        hip_flex_diff = torch.abs(joint_pos[:, 0] - joint_pos[:, 4])  # left vs right hip flexion
+        knee_diff = torch.abs(joint_pos[:, 2] - joint_pos[:, 6])      # left vs right knee
+        ankle_diff = torch.abs(joint_pos[:, 3] - joint_pos[:, 7])    # left vs right ankle
+        symmetry_error = hip_flex_diff + knee_diff + ankle_diff  # smaller = more symmetric
+
         # Joint limit violation (distance to limits)
         joint_pos_lower = self.joint_pos_limits[:, :, 0]
         joint_pos_upper = self.joint_pos_limits[:, :, 1]
@@ -181,6 +189,7 @@ class HumanoidPolicyEnv(DirectRLEnv):
             rew_scale_base_vel=self.cfg.rew_scale_base_vel,
             rew_scale_base_ang_vel=self.cfg.rew_scale_base_ang_vel,
             rew_scale_joint_limit=self.cfg.rew_scale_joint_limit,
+            rew_scale_symmetry=self.cfg.rew_scale_symmetry,
             # Values
             upright=upright,
             joint_vel=joint_vel,
@@ -190,6 +199,7 @@ class HumanoidPolicyEnv(DirectRLEnv):
             base_ang_vel=base_ang_vel,
             joint_limit_violation=joint_limit_violation,
             reset_terminated=self.reset_terminated,
+            symmetry_error=symmetry_error,
         )
 
         return total_reward
@@ -301,6 +311,7 @@ def compute_rewards(
     rew_scale_base_vel: float,
     rew_scale_base_ang_vel: float,
     rew_scale_joint_limit: float,
+    rew_scale_symmetry: float,
     # Values
     upright: torch.Tensor,
     joint_vel: torch.Tensor,
@@ -310,6 +321,7 @@ def compute_rewards(
     base_ang_vel: torch.Tensor,
     joint_limit_violation: torch.Tensor,
     reset_terminated: torch.Tensor,
+    symmetry_error: torch.Tensor,
 ) -> torch.Tensor:
     """
     Compute total reward for balance task.
@@ -336,6 +348,12 @@ def compute_rewards(
     # Upright reward: +1 when upright (upright ≈ -1), 0 when fallen
     # Transform: upright ∈ [-1, +1] → reward ∈ [0, 1]
     rew_upright = rew_scale_upright * (0.5 - 0.5 * upright)
+
+    # Symmetry reward: reward for symmetric leg positions (prevents lunging)
+    # symmetry_error = sum of differences between left/right joints
+    # Smaller error = more symmetric = higher reward
+    # Normalize: exp(-symmetry_error) gives reward in [0, 1] range
+    rew_symmetry = rew_scale_symmetry * torch.exp(-symmetry_error)
 
     # === Negative Rewards (Penalties) ===
 
@@ -364,6 +382,7 @@ def compute_rewards(
     total_reward = (
         rew_alive +
         rew_upright +
+        rew_symmetry +
         rew_termination +
         rew_joint_vel +
         rew_action +
