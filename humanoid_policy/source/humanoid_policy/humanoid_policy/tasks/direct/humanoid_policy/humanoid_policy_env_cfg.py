@@ -192,7 +192,7 @@ class HumanoidPolicyEnvCfg(DirectRLEnvCfg):
     # ---- Termination Conditions ----
     # ONLY terminate on ground contact (Hüfte/Oberschenkel/Unterschenkel touching ground)
     # NO termination on tilt - robot can lean as much as it wants until it touches ground
-    min_base_height = 0.30            # backup: terminate if base drops very low [m]
+    min_base_height = 0.25            # backup: terminate if base drops very low [m]
     use_contact_termination = True     # primary: terminate on body-ground contact
 
     # ---- Reset Randomization ----

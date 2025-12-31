@@ -14,7 +14,7 @@ import isaaclab.sim as sim_utils
 from isaaclab.assets import Articulation
 from isaaclab.envs import DirectRLEnv
 from isaaclab.sim.spawners.from_files import GroundPlaneCfg, spawn_ground_plane
-from isaaclab.utils.math import sample_uniform, quat_rotate_inverse
+from isaaclab.utils.math import sample_uniform, quat_apply_inverse
 
 from .humanoid_policy_env_cfg import HumanoidPolicyEnvCfg
 
@@ -108,9 +108,9 @@ class HumanoidPolicyEnv(DirectRLEnv):
         base_ang_vel = self.robot.data.root_ang_vel_w  # [num_envs, 3]
 
         # Transform to base frame
-        projected_gravity = quat_rotate_inverse(base_quat, self.gravity_vec)
-        base_lin_vel_b = quat_rotate_inverse(base_quat, base_lin_vel)
-        base_ang_vel_b = quat_rotate_inverse(base_quat, base_ang_vel)
+        projected_gravity = quat_apply_inverse(base_quat, self.gravity_vec)
+        base_lin_vel_b = quat_apply_inverse(base_quat, base_lin_vel)
+        base_ang_vel_b = quat_apply_inverse(base_quat, base_ang_vel)
 
         # Get joint states
         joint_pos = self.joint_pos[:, self._joint_ids]
@@ -150,7 +150,7 @@ class HumanoidPolicyEnv(DirectRLEnv):
         base_ang_vel = self.robot.data.root_ang_vel_w
 
         # Compute projected gravity (z-component indicates uprightness)
-        projected_gravity = quat_rotate_inverse(base_quat, self.gravity_vec)
+        projected_gravity = quat_apply_inverse(base_quat, self.gravity_vec)
         upright = projected_gravity[:, 2]  # -1 = upright, +1 = upside down
 
         # Joint states
@@ -160,8 +160,8 @@ class HumanoidPolicyEnv(DirectRLEnv):
         # Symmetry: difference between left and right leg joints
         # Indices: [0=HipFlexL, 1=HipAbdL, 2=KneeL, 3=AnkleL, 4=HipFlexR, 5=HipAbdR, 6=KneeR, 7=AnkleR]
         # NOTE: Manche Joints sind gespiegelt (+), manche nicht (-) - abhängig vom USD-Export
-        hip_flex_diff = torch.abs(joint_pos[:, 0] + joint_pos[:, 4])  # gespiegelt: Summe = 0
-        knee_diff = torch.abs(joint_pos[:, 2] - joint_pos[:, 6])      # TEST: nicht gespiegelt: Differenz = 0
+        hip_flex_diff = torch.abs(joint_pos[:, 0] - joint_pos[:, 4])  # nicht gespiegelt: Differenz = 0
+        knee_diff = torch.abs(joint_pos[:, 2] + joint_pos[:, 6])       # gespiegelt: Summe = 0
         ankle_diff = torch.abs(joint_pos[:, 3] + joint_pos[:, 7])     # gespiegelt: Summe = 0
         symmetry_error = hip_flex_diff + knee_diff + ankle_diff  # smaller = more symmetric
 
