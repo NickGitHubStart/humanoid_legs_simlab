@@ -174,7 +174,6 @@ class HumanoidPolicyEnvCfg(DirectRLEnvCfg):
     rew_scale_alive = 2.0              # reward for staying alive (not fallen)
     rew_scale_upright = 1.0            # reward for upright orientation
     rew_scale_foot_contact = 0.5       # reward for feet touching ground
-    rew_scale_symmetry = 2.0          # reward for symmetric leg positions (prevents lunging) - TEST: deutlich erhöht
     
     # Negative rewards (penalties)
     rew_scale_terminated = -5.0        # penalty for falling (ground contact)
@@ -192,7 +191,7 @@ class HumanoidPolicyEnvCfg(DirectRLEnvCfg):
     # ---- Termination Conditions ----
     # ONLY terminate on ground contact (Hüfte/Oberschenkel/Unterschenkel touching ground)
     # NO termination on tilt - robot can lean as much as it wants until it touches ground
-    min_base_height = 0.20            # backup: terminate if base drops very low [m]
+    min_base_height = 0.50          # backup: terminate if base drops very low [m]
     use_contact_termination = True     # primary: terminate on body-ground contact
 
     # ---- Reset Randomization ----

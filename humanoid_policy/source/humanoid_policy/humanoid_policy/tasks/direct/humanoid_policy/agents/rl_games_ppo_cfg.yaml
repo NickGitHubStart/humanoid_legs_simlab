@@ -58,7 +58,7 @@ params:
     lr_schedule: adaptive
     kl_threshold: 0.01
     score_to_win: 100000
-    max_epochs: 1000           # test run with symmetry reward
+    max_epochs: 2000           # test run with symmetry reward
     save_best_after: 50        # save best model earlier
     save_frequency: 50
     grad_norm: 1.0
