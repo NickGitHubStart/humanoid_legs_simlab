@@ -60,6 +60,7 @@ import os
 import random
 import time
 import torch
+import yaml
 
 from rl_games.common import env_configurations, vecenv
 from rl_games.common.player import BasePlayer
@@ -129,6 +130,22 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     else:
         resume_path = retrieve_file_path(args_cli.checkpoint)
     log_dir = os.path.dirname(os.path.dirname(resume_path))
+
+    # Load agent configuration from checkpoint directory if it exists
+    agent_yaml_path = os.path.join(log_dir, "params", "agent.yaml")
+    if os.path.exists(agent_yaml_path):
+        print(f"[INFO] Loading agent configuration from: {agent_yaml_path}")
+        with open(agent_yaml_path, "r") as f:
+            checkpoint_agent_cfg = yaml.safe_load(f)
+        # Update agent_cfg with checkpoint configuration (preserve current values if not in checkpoint)
+        if "params" in checkpoint_agent_cfg:
+            # Deep merge: update network config from checkpoint
+            if "network" in checkpoint_agent_cfg["params"]:
+                agent_cfg["params"]["network"] = checkpoint_agent_cfg["params"]["network"]
+            # Update other important params
+            for key in ["algo", "model"]:
+                if key in checkpoint_agent_cfg["params"]:
+                    agent_cfg["params"][key] = checkpoint_agent_cfg["params"][key]
 
     # set the log directory for the environment (works for all environment types)
     env_cfg.log_dir = log_dir
