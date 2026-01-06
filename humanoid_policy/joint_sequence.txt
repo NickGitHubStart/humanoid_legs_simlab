@@ -1,39 +1,20 @@
 # Joint Sequence File for Humanoid Robot
 # Format: 8 joint positions in radians (space or comma separated)
 # Joint order: Revolute_11, Revolute_12, Revolute_13, Revolute_14, Revolute_15, Revolute_16, Revolute_17, Revolute_18
-# Comments start with # and are ignored
 #
-# Initial pose (standing)
+# Gelenke:
+# Revolute_11 = Hüfte Flexion links
+# Revolute_12 = Hüfte Abduktion links  
+# Revolute_13 = Knie links (positiv = gebeugt)
+# Revolute_14 = Knöchel links (negativ = Fuß nach vorne)
+# Revolute_15 = Hüfte Flexion rechts
+# Revolute_16 = Hüfte Abduktion rechts
+# Revolute_17 = Knie rechts (negativ = gebeugt)
+# Revolute_18 = Knöchel rechts (positiv = Fuß nach vorne)
+
+# Initial position (leicht gebeugte Knie, Hüfte tiefer)
 0.0 0.0 0.3491 -0.3491 0.0 0.0 -0.3491 0.3491
 
-# Slight bend in left leg
-0.2 0.0 0.5 -0.3 0.0 0.0 -0.3491 0.3491
-
-# Return to initial
-0.0 0.0 0.3491 -0.3491 0.0 0.0 -0.3491 0.3491
-
-# Slight bend in right leg
-0.0 0.0 0.3491 -0.3491 0.2 0.0 -0.5 0.3
-
-# Return to initial
-0.0 0.0 0.3491 -0.3491 0.0 0.0 -0.3491 0.3491
-
-
-# Both legs bend slightly
-0.1 0.0 0.4 -0.3 0.1 0.0 -0.4 0.3
-
-# Return to initial
-0.0 0.0 0.3491 -0.3491 0.0 0.0 -0.3491 0.3491
-
-# Left leg forward (hip flexion)
-0.5 0.0 0.3491 -0.3491 0.0 0.0 -0.3491 0.3491
-
-# Return to initial
-0.0 0.0 0.3491 -0.3491 0.0 0.0 -0.3491 0.3491
-
-# Right leg forward (hip flexion)
-0.0 0.0 0.3491 -0.3491 0.5 0.0 -0.3491 0.3491
-
-# Return to initial
+# Hüfte höher (Knie gestreckter, Knöchel minimal angepasst für COM über Fuß)
 0.0 0.0 0.3491 -0.3491 0.0 0.0 -0.3491 0.3491
 

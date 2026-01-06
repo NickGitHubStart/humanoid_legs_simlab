@@ -89,6 +89,62 @@ To enable your extension, follow these steps:
     - Find your extension under the `Third Party` category.
     - Toggle it to enable your extension.
 
+## Starting Isaac Sim and Isaac Lab
+
+### Starting Isaac Sim GUI
+
+To start Isaac Sim with a graphical interface:
+
+1. Navigate to your Isaac Sim installation directory (typically `C:\isaac-sim` on Windows)
+2. Run `isaac-sim.bat` to launch Isaac Sim with GUI
+
+Alternatively, you can start it from the command line:
+
+```bash
+cd C:\isaac-sim
+isaac-sim.bat
+```
+
+Once Isaac Sim is running, you can import URDF files and work with your robot models directly in the GUI.
+
+### Starting Isaac Lab
+
+To start Isaac Lab (for training and simulation):
+
+1. Activate your Isaac Lab environment:
+
+   ```bash
+   cd C:\Users\<USERNAME>\IsaacLab
+   ..\env_isaaclab\Scripts\activate
+   ```
+
+   Replace `<USERNAME>` with your Windows username.
+
+2. Navigate to your project directory:
+
+   ```bash
+   cd <PATH_TO_YOUR_PROJECT>\humanoid_policy
+   ```
+
+   Replace `<PATH_TO_YOUR_PROJECT>` with the path to your project directory.
+
+3. Install the package (required after any code changes):
+
+   ```bash
+   cd source/humanoid_policy
+   pip install -e .
+   ```
+
+4. Run training or play scripts:
+
+   ```bash
+   # Training
+   python scripts/rl_games/train.py --task=Template-Humanoid-Policy-Direct-v0 --num_envs=1024 --headless
+
+   # Play/Visualization
+   python scripts/rl_games/play.py --task=Template-Humanoid-Policy-Direct-v0 --num_envs=1
+   ```
+
 ## Code formatting
 
 We have a pre-commit template to automatically format your code.

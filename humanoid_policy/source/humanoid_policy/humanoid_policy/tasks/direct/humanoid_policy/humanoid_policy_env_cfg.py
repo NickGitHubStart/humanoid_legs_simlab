@@ -40,7 +40,7 @@ HUMANOID_LEG_CFG = ArticulationCfg(
         ),
     ),
     init_state=ArticulationCfg.InitialStateCfg(
-        pos=(0.0, 0.0, 0.8),  # Starting position [x, y, z] - adjust if robot is taller/shorter
+        pos=(0.0, 0.0, 1.0),  # Starting position [x, y, z] - höher für Joint-Sequence Tests
         #rot=(0.9848, 0.0, 0.1736, 0.0),  # Quaternion (w,x,y,z): ~20° forward tilt to compensate ankle angle
         joint_pos={
             # Smoothed nominal pose (deg → rad):
@@ -191,7 +191,7 @@ class HumanoidPolicyEnvCfg(DirectRLEnvCfg):
     # ---- Termination Conditions ----
     # ONLY terminate on ground contact (Hüfte/Oberschenkel/Unterschenkel touching ground)
     # NO termination on tilt - robot can lean as much as it wants until it touches ground
-    min_base_height = 0.50          # backup: terminate if base drops very low [m]
+    min_base_height = 0.05          # backup: terminate if base drops very low [m]
     use_contact_termination = True     # primary: terminate on body-ground contact
 
     # ---- Reset Randomization ----

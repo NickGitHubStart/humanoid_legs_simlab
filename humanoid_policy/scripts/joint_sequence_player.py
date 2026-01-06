@@ -25,7 +25,7 @@ parser.add_argument(
     "--file", type=str, default="joint_sequence.txt", help="Path to text file with joint positions."
 )
 parser.add_argument(
-    "--delay", type=float, default=0.1, help="Delay between frames in seconds (default: 0.1)."
+    "--delay", type=float, default=1.0, help="Delay between frames in seconds (default: 1.0)."
 )
 parser.add_argument(
     "--loop", action="store_true", default=False, help="Loop the sequence continuously."
@@ -221,9 +221,9 @@ def main():
                             joint_vel_tensor = torch.zeros_like(joint_pos_tensor)
                             
                             # Write joint state to simulation
-                            # This directly sets the joint positions
+                            # This directly sets the joint positions for the specified joints only
                             robot.write_joint_state_to_sim(
-                                joint_pos_tensor, joint_vel_tensor, None, env.unwrapped.robot._ALL_INDICES
+                                joint_pos_tensor, joint_vel_tensor, joint_ids, env.unwrapped.robot._ALL_INDICES
                             )
                             
                             print(f"[INFO] Frame {frame_idx + 1}/{len(sequence)}: {joint_positions}")
