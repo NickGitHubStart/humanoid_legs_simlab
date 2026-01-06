@@ -66,7 +66,7 @@ params:
     truncate_grads: True
     e_clip: 0.2
     horizon_length: 24         # Anymal-style: shorter horizon for stability
-    minibatch_size: 16384      # Anymal-style: smaller batch for stability
+    minibatch_size: 24        #16384 davor gehabt # For single env: must divide batch_size (num_envs * horizon_length)
     mini_epochs: 5
     critic_coef: 2
     clip_value: True

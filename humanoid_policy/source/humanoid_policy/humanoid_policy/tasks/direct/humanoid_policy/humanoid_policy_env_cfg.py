@@ -19,10 +19,7 @@ from isaaclab.utils import configclass
 
 HUMANOID_LEG_CFG = ArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
-        usd_path=(
-            "C:/Users/2003n/projects/humanoid_tracked_legged_robot/policy/humanoid_legs_simlab/"
-            "humanoid_policy/source/humanoid_policy/humanoid_policy/robots/assets/humanoid_leg_robot.usd"
-        ),
+        usd_path="C:/Users/2003n/projects/humanoid_tracked_legged_robot/USD/onlytorque.usd",
         activate_contact_sensors=True,
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
             disable_gravity=False,
@@ -40,19 +37,21 @@ HUMANOID_LEG_CFG = ArticulationCfg(
         ),
     ),
     init_state=ArticulationCfg.InitialStateCfg(
-        pos=(0.0, 0.0, 1.0),  # Starting position [x, y, z] - höher für Joint-Sequence Tests
-        #rot=(0.9848, 0.0, 0.1736, 0.0),  # Quaternion (w,x,y,z): ~20° forward tilt to compensate ankle angle
+        pos=(0.0, 0.0, 1.0),  # Starting position [x, y, z]
+        # rot=(0.7071, 0.0, -0.7071, 0.0),  # Quaternion (w,x,y,z): -90° rotation around Y-axis
+        # Keine Rotation - USD bereits korrekt orientiert
         joint_pos={
-            # Smoothed nominal pose (deg → rad):
-            # near-zero angles → 0; ~±20° → ±0.3491 rad
-            "Revolute_11": 0.0,        # Hüfte Flexion links
-            "Revolute_12": 0.0,        # Hüfte Abduktion links
-            "Revolute_13": 0.3491,     # Knie links (~20°)
-            "Revolute_14": -0.3491,    # Knöchel links (~-20°)
-            "Revolute_15": 0.0,        # Hüfte Flexion rechts
-            "Revolute_16": 0.0,        # Hüfte Abduktion rechts
-            "Revolute_17": -0.3491,    # Knie rechts (~-20°)
-            "Revolute_18": 0.3491,     # Knöchel rechts (~20°)
+            # COM-korrigierte Startpose (deg → rad) - Reihenfolge wie in USD:
+            # 1. HuefteFlexionRechts: -30° | 2. HuefteFlexionLinks: -30° | 3. AbduktionLinks: 0° | 4. AbduktionRechts: 0°
+            # 5. KnieLinks: 40° | 6. AnkleLinks: -40° | 7. KnieRechts: 40° | 8. AnkleRechts: -40°
+            "HuefteFlexionRechts": -0.5236,    # -30°
+            "HuefteFlexionLinks": -0.5236,     # -30°
+            "AbduktionLinks": 0.0,             # 0°
+            "AbduktionRechts": 0.0,            # 0°
+            "KnieLinks": 0.6981,               # 40°
+            "AnkleLinks": -0.6981,             # -40°
+            "KnieRechts": 0.6981,              # 40°
+            "AnkleRechts": -0.6981,            # -40°
         },
         joint_vel={
             ".*": 0.0,  # All joints start with zero velocity
@@ -62,14 +61,14 @@ HUMANOID_LEG_CFG = ArticulationCfg(
     actuators={
         "legs": ImplicitActuatorCfg(
             joint_names_expr=[
-                "Revolute_11",
-                "Revolute_12",
-                "Revolute_13",
-                "Revolute_14",
-                "Revolute_15",
-                "Revolute_16",
-                "Revolute_17",
-                "Revolute_18",
+                "HuefteFlexionRechts",
+                "HuefteFlexionLinks",
+                "AbduktionLinks",
+                "AbduktionRechts",
+                "KnieLinks",
+                "AnkleLinks",
+                "KnieRechts",
+                "AnkleRechts",
             ],
             effort_limit=300.0,   # Max torque [Nm]
             velocity_limit=10.0,  # Max velocity [rad/s]
@@ -131,43 +130,46 @@ class HumanoidPolicyEnvCfg(DirectRLEnvCfg):
     )
 
     # ---- Joint Names (for reference in Env) ----
+    # Reihenfolge muss mit USD-Datei übereinstimmen!
     joint_names = [
-        "Revolute_11",
-        "Revolute_12",
-        "Revolute_13",
-        "Revolute_14",
-        "Revolute_15",
-        "Revolute_16",
-        "Revolute_17",
-        "Revolute_18",
+        "HuefteFlexionRechts",
+        "HuefteFlexionLinks",
+        "AbduktionLinks",
+        "AbduktionRechts",
+        "KnieLinks",
+        "AnkleLinks",
+        "KnieRechts",
+        "AnkleRechts",
     ]
 
     # ---- Body Names for Contact Detection ----
     # Bodies that should NOT touch ground (terminate if they do)
     termination_contact_bodies = [
         "base_link",           # Hüfte/Becken
+        "abduktion_flexion1_1_1",  # Hüfte-Abduktion links
+        "abduktion_flexion2_1_1",  # Hüfte-Abduktion rechts
         "upper_leg1_1_1",      # Oberschenkel links
-        "upper_leg2_1_1",      # Oberschenkel rechts
+        "upper_leg1_1_2",      # Oberschenkel rechts
         "lower_leg1_1_1",      # Unterschenkel links
-        "lower_leg2_1_1",      # Unterschenkel rechts
+        "lower_leg1_1_2",      # Unterschenkel rechts
     ]
     # Bodies that SHOULD touch ground (feet)
     foot_bodies = [
         "foot1_1_1",           # Fuß links
-        "foot2_1_1",           # Fuß rechts
+        "foot1_1_2",           # Fuß rechts
     ]
 
     # ---- Action Scale (per Joint) ----
-    # Torque multiplier [Nm] for each joint:
-    # Revolute_11 (Hüfte Flexion L): 25 Nm - mehr Kraft für Vorwärts/Rückwärts
-    # Revolute_12 (Hüfte Abduktion L): 15 Nm
-    # Revolute_13 (Knie L): 15 Nm
-    # Revolute_14 (Knöchel L): 15 Nm
-    # Revolute_15 (Hüfte Flexion R): 25 Nm - mehr Kraft für Vorwärts/Rückwärts
-    # Revolute_16 (Hüfte Abduktion R): 15 Nm
-    # Revolute_17 (Knie R): 15 Nm
-    # Revolute_18 (Knöchel R): 15 Nm
-    action_scale = (25.0, 15.0, 15.0, 15.0, 25.0, 15.0, 15.0, 15.0)
+    # Torque multiplier [Nm] for each joint (Reihenfolge wie in USD):
+    # 1. HuefteFlexionRechts: 25 Nm - mehr Kraft für Vorwärts/Rückwärts
+    # 2. HuefteFlexionLinks: 25 Nm - mehr Kraft für Vorwärts/Rückwärts
+    # 3. AbduktionLinks: 15 Nm
+    # 4. AbduktionRechts: 15 Nm
+    # 5. KnieLinks: 15 Nm
+    # 6. AnkleLinks: 15 Nm
+    # 7. KnieRechts: 15 Nm
+    # 8. AnkleRechts: 15 Nm
+    action_scale = (25.0, 25.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0)
 
     # ---- Reward Scales ----
     # Positive rewards
