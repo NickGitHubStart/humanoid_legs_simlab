@@ -1,0 +1,75 @@
+=====================================================
+ONSHAPE TO URDF EXPORT - SETUP ANLEITUNG
+=====================================================
+
+SCHRITT 1: API KEYS ERSTELLEN
+-----------------------------
+1. Gehe zu https://cad.onshape.com/
+2. Klicke auf dein Profil (oben rechts) -> "My Account"
+3. Gehe zu "Developer" oder "API keys" 
+4. Klicke auf "Create new API key"
+5. Gib einen Namen ein (z.B. "URDF Export")
+6. WICHTIG: Kopiere sofort Access Key und Secret Key!
+   (Der Secret Key wird nur einmal angezeigt!)
+
+SCHRITT 2: API KEYS SPEICHERN (2 Optionen)
+------------------------------------------
+
+OPTION A - Environment Variables (empfohlen):
+In PowerShell ausführen:
+  $env:ONSHAPE_ACCESS_KEY = "dein_access_key"
+  $env:ONSHAPE_SECRET_KEY = "dein_secret_key"
+
+Oder permanent in Windows:
+  [System.Environment]::SetEnvironmentVariable('ONSHAPE_ACCESS_KEY', 'dein_access_key', 'User')
+  [System.Environment]::SetEnvironmentVariable('ONSHAPE_SECRET_KEY', 'dein_secret_key', 'User')
+
+OPTION B - Credentials Datei:
+Erstelle Datei: %USERPROFILE%\.onshape_api
+Mit folgendem Inhalt (JSON):
+{
+    "access_key": "dein_access_key",
+    "secret_key": "dein_secret_key"
+}
+
+SCHRITT 3: DOCUMENT ID FINDEN
+-----------------------------
+1. Öffne dein Onshape Dokument
+2. Schau in die URL:
+   https://cad.onshape.com/documents/ABC123.../w/XYZ789...
+                                   ^^^^^^^^
+                                   Das ist deine Document ID!
+3. Trage sie in config.yaml ein
+
+SCHRITT 4: TOOL INSTALLIEREN
+----------------------------
+pip install onshape-to-robot
+
+Oder das neuere Tool:
+pip install onshape-urdf-exporter
+
+SCHRITT 5: EXPORT AUSFÜHREN
+---------------------------
+cd onshape_to_urdf
+onshape-to-robot .
+
+Oder mit dem neuen Tool:
+onshape-urdf-exporter .
+
+ERGEBNIS:
+---------
+Nach erfolgreichem Export findest du hier:
+- robot.urdf (oder humanoid_legs.urdf)
+- meshes/ Ordner mit STL Dateien
+- robot.yaml (optional)
+
+NÄCHSTE SCHRITTE FÜR ISAAC LAB:
+-------------------------------
+1. URDF zu USD konvertieren:
+   python -m omni.isaac.lab.app --convert_urdf humanoid_legs.urdf humanoid_legs.usd
+
+2. USD in robots/assets/ Ordner kopieren
+
+Mehr Info: https://onshape-urdf-exporter.readthedocs.io/
+LycheeAI Video: https://www.youtube.com/watch?v=KCHmYvYF_6c
+

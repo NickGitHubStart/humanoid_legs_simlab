@@ -1,0 +1,11 @@
+{
+    "documentId": "5b6c4107423f91ad610d2001",
+    "workspaceId": "c24b42f792d8b0ae75247fb7",
+    "assemblyName": "URDF_Material_JointLIMITS BACKUP_NOCH KEIN URDF",
+    "outputFormat": "urdf",
+    "robotName": "humanoid_legs",
+    "meshFormat": "stl",
+    "dynamics": true,
+    "useCollisionsConfigurations": true
+}
+

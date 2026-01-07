@@ -1,0 +1,31 @@
+# Onshape URDF Export Configuration
+# Dokumentation: https://onshape-to-robot.readthedocs.io/
+
+# Deine Onshape Document ID (aus der URL extrahiert)
+documentId: "5b6c4107423f91ad610d2001"
+
+# Workspace ID für die aktuelle Version
+workspaceId: "c24b42f792d8b0ae75247fb7"
+
+# Output Format
+outputFormat: urdf
+
+# Robot Name (wird für Dateinamen verwendet)
+robotName: humanoid_legs
+
+# Mesh Format (stl oder obj)
+meshFormat: stl
+
+# Dynamics (Masse, Trägheit) hinzufügen
+dynamics: true
+
+# Collision Meshes verwenden (gleich wie visuals)
+useCollisionsConfigurations: true
+
+# Optional: Falls du ein bestimmtes Assembly exportieren willst
+# assemblyName: "Main Assembly"
+
+# Optional: Mesh Vereinfachung
+# simplifyMeshes: false
+# maxTriangles: 10000
+
